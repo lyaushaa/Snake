@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using Common;
 using Newtonsoft.Json;
 
@@ -172,26 +175,17 @@ namespace Snake
         {
             while (true)
             {
-
-                // останавливаем на 100 милисикунд Thread.Sleep(100);
                 Thread.Sleep(100);
-                // Получаем змей которых необходимо удалить
-                List<ViewModelGames> RemoteSnakes = viewModelGames.FindAll(x => x.SnakesPlayers.GameOver);
-                // Если кол-во змей более 0 if (RemoteSnakes.Count > 0)
+                List<ViewModelGames> RemoteSnakes = viewModelGames.FindAll(x => x.SnakesPlayers.Game0ver);
                 if (RemoteSnakes.Count > 0)
-                    // Перебираем удалённых змей
                     foreach (ViewModelGames DeadSnake in RemoteSnakes)
                     {
-                        // Говорим что отключаем игрока
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.WriteLine($"0тключил пользоватлеля: {remoteIPAddress.Find(x => x.IdSnake == DeadSnake.IdSnake).IPAddress}" +
                           $":{remoteIPAddress.Find(x => x.IdSnake == DeadSnake.IdSnake).Port}");
-                        // Удаляем пользователя
                         remoteIPAddress.RemoveAll(x => x.IdSnake == DeadSnake.IdSnake);
                     }
-                // Удаляем змей которых необходимо удалить 
-                viewModelGames.RemoveAll(x => x.SnakesPlayers.GameOver);
-                // Перебираем подключенных игроков
+                viewModelGames.RemoveAll(x => x.SnakesPlayers.Game0ver);
 
                 foreach (ViewModelUserSettings User in remoteIPAddress)
                 {
@@ -247,12 +241,12 @@ namespace Snake
                     if (Snake.Points[0].X <= 0 || Snake.Points[0].X >= 793)
                     {
                         // Говорим что игра окончена
-                        Snake.GameOver = true;
+                        Snake.Game0ver = true;
                     }
                     else if (Snake.Points[0].Y <= 0 || Snake.Points[0].Y >= 420)
                     {
                         // Говорим что игра окончена
-                        Snake.GameOver = true;
+                        Snake.Game0ver = true;
                     }
                     // проверяем что мы не столкнулись сами с собой
                     if (Snake.direction != Snakes.Direction.Start)
@@ -267,7 +261,7 @@ namespace Snake
                                 if (Snake.Points[0].Y >= Snake.Points[i].Y - 1 && Snake.Points[0].Y <= Snake.Points[i].Y + 1)
                                 {
                                     // Говорим что игра окончена
-                                    Snake.GameOver = true;
+                                    Snake.Game0ver = true;
                                     // останавливаем цикл
                                     break;
 
@@ -317,7 +311,7 @@ namespace Snake
 
                     }
                     // Если игра для змеи закончена
-                    if (Snake.GameOver)
+                    if (Snake.Game0ver)
                     {
                         // Загружаем таблицу
                         LoadLeaders();
@@ -338,6 +332,64 @@ namespace Snake
                 }
                 // Рассылаем пользователям ответ
                 Send();
+
+            }
+
+        }
+        public static void SaveLeaders()
+        {
+            // Преобразуем данные игроков в JSON
+            string json = JsonConvert.SerializeObject(Leaders);
+            // Записываем в файл
+            StreamWriter SW = new StreamWriter("./leadens.txt");
+            // Пишем строку
+            SW.WriteLine(json);
+            // Закрываем файл
+            SW.Close();
+
+        }
+
+        public static void LoadLeaders()
+        {
+            // Проверяем что есть файл
+            if (File.Exists("./leaders.txt"))
+            {
+                // Открваем файл
+                StreamReader SR = new StreamReader("./leaders.txt");
+                // читаем первую строку
+                string json = SR.ReadLine();
+                // Закрываем файл
+                SR.Close();
+                // Если есто что читать 
+                if (!string.IsNullOrEmpty(json))
+                    // Преобразуем троку в объект
+                    Leaders = JsonConvert.DeserializeObject<List<Leaders>>(json);
+                else
+                    // Возвращаем пустой результат 
+                    Leaders = new List<Leaders>();
+            }
+            else
+                // Возвращаем пустой результат
+                Leaders = new List<Leaders>();
+        }
+        static void Main(string[] args)
+        {
+            try
+            {
+                // Создаем поток для прослушивания сообщений от клиентов
+                Thread tRec = new Thread(new ThreadStart(Receiver));
+                // Запускаем поток прослушивания
+                tRec.Start();
+                // Создаём таймер для управления игрой 
+                Thread tTime = new Thread(Timer);
+                // Запускаем таймер для управления игрой
+                tTime.Start();
+            }
+            catch (Exception ex)
+            {
+                // Если что-то пошло не так, выводим сообщение о том что возникла ошибка
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Возникло исключение: " + ex.ToString() + "\n " + ex.Message);
 
             }
 
