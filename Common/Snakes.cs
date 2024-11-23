@@ -30,6 +30,6 @@ namespace Common
         }
         public List<Point> Points = new List<Point>();
         public Direction direction = Direction.Start;
-        public bool Game0ver = false;
+        public bool GameOver = false;
     }
 }

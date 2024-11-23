@@ -176,7 +176,7 @@ namespace Snake
             while (true)
             {
                 Thread.Sleep(100);
-                List<ViewModelGames> RemoteSnakes = viewModelGames.FindAll(x => x.SnakesPlayers.Game0ver);
+                List<ViewModelGames> RemoteSnakes = viewModelGames.FindAll(x => x.SnakesPlayers.GameOver);
                 if (RemoteSnakes.Count > 0)
                     foreach (ViewModelGames DeadSnake in RemoteSnakes)
                     {
@@ -185,7 +185,7 @@ namespace Snake
                           $":{remoteIPAddress.Find(x => x.IdSnake == DeadSnake.IdSnake).Port}");
                         remoteIPAddress.RemoveAll(x => x.IdSnake == DeadSnake.IdSnake);
                     }
-                viewModelGames.RemoveAll(x => x.SnakesPlayers.Game0ver);
+                viewModelGames.RemoveAll(x => x.SnakesPlayers.GameOver);
 
                 foreach (ViewModelUserSettings User in remoteIPAddress)
                 {
@@ -241,12 +241,12 @@ namespace Snake
                     if (Snake.Points[0].X <= 0 || Snake.Points[0].X >= 793)
                     {
                         // Говорим что игра окончена
-                        Snake.Game0ver = true;
+                        Snake.GameOver = true;
                     }
                     else if (Snake.Points[0].Y <= 0 || Snake.Points[0].Y >= 420)
                     {
                         // Говорим что игра окончена
-                        Snake.Game0ver = true;
+                        Snake.GameOver = true;
                     }
                     // проверяем что мы не столкнулись сами с собой
                     if (Snake.direction != Snakes.Direction.Start)
@@ -261,7 +261,7 @@ namespace Snake
                                 if (Snake.Points[0].Y >= Snake.Points[i].Y - 1 && Snake.Points[0].Y <= Snake.Points[i].Y + 1)
                                 {
                                     // Говорим что игра окончена
-                                    Snake.Game0ver = true;
+                                    Snake.GameOver = true;
                                     // останавливаем цикл
                                     break;
 
@@ -311,7 +311,7 @@ namespace Snake
 
                     }
                     // Если игра для змеи закончена
-                    if (Snake.Game0ver)
+                    if (Snake.GameOver)
                     {
                         // Загружаем таблицу
                         LoadLeaders();
