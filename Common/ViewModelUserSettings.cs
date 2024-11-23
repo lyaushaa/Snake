@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Common
 {
-    class ViewModelUserSettings
+    public class ViewModelUserSettings
     {
         public string IPAddress { get; set; }
         public string Port { get; set; }

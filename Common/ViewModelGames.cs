@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Common
 {
-    class ViewModelGames
+    public class ViewModelGames
     {
         ///<summary> Змея персонажа 
         public Snakes SnakesPlayers = new Snakes();

@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Common
 {
-    class Leaders
+   public class Leaders
     {
         public string Name { get; set; }
-        public string Points { get; set; }
+        public int Points { get; set; }
 
     }
 }
