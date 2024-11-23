@@ -81,31 +81,20 @@ namespace Snake
                     // Начало игры 
                     if (returnData.ToString().Contains("/start"))
                     {
-                        // Делим данные на командуи данные Json
                         string[] dataMessage = returnData.ToString().Split('|');
-                        // Конвертируем данные в модель
                         ViewModelUserSettings viewModelUserSettings = JsonConvert.DeserializeObject<ViewModelUserSettings>(dataMessage[1]);
-                        // Выводим запись в контроль
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.WriteLine($"Подключился пользователь:{viewModelUserSettings.IPAddress}:{viewModelUserSettings.Port}");
-                        // Добовляем данные в коллекцию для того, чтобы отправлять пользователю
                         remoteIPAddress.Add(viewModelUserSettings);
-                        // добовляем змею
                         viewModelUserSettings.IdSnake = AddSnake();
-                        // связываем змею и игрока
                         viewModelGames[viewModelUserSettings.IdSnake].IdSnake = viewModelUserSettings.IdSnake;
                     }
                     else
                     {
-                        // Если команда не является стартом, значит:
-                        // управление змеёй
                         string[] dataMessage = returnData.ToString().Split('|');
                         // Конвертируем данные в модель
                         ViewModelUserSettings viewModelUserSettings = JsonConvert.DeserializeObject<ViewModelUserSettings>(dataMessage[1]);
-                        // Получаем ID игрока
                         int IdPlayer = -1;
-                        // В случае если мёртвый игрок присылает команду
-                        // Находим ID игрока, ища его в списке по ID адресу и Порту 
                         IdPlayer = remoteIPAddress.FindIndex(x => x.IPAddress == viewModelUserSettings.IPAddress && x.Port == viewModelUserSettings.Port);
                         // Если игрок найден 
                         if (IdPlayer != -1)
