@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace Common
 {
-    public class Class1
+   public class Leaders
     {
+        public string Name { get; set; }
+        public int Points { get; set; }
+
     }
 }
